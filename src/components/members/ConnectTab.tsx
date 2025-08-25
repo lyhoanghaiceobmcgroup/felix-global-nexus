@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Users, Clock } from "lucide-react";
 
 interface ConnectTabProps {
-  currentText: any;
+  currentText: {
+    connect: {
+      title: string;
+    };
+  };
 }
 
 export const ConnectTab = ({ currentText }: ConnectTabProps) => {

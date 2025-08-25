@@ -39,7 +39,19 @@ interface PresentationTabProps {
   nextPresenter: () => void;
   skipPresenter: () => void;
   language: string;
-  currentText: any;
+  currentText: {
+    presentation: {
+      title: string;
+      subtitle: string;
+      currentPresenter: string;
+      timeRemaining: string;
+      start: string;
+      pause: string;
+      next: string;
+      skip: string;
+      noMembers: string;
+    };
+  };
 }
 
 export const PresentationTab = ({

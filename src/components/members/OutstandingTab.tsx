@@ -32,7 +32,16 @@ interface Member {
 interface OutstandingTabProps {
   filteredMembers: Member[];
   language: string;
-  currentText: any;
+  currentText: {
+    outstanding: {
+      title: string;
+      subtitle: string;
+    };
+    members: {
+      viewProfile: string;
+      connect: string;
+    };
+  };
 }
 
 export const OutstandingTab = ({ filteredMembers, language, currentText }: OutstandingTabProps) => {

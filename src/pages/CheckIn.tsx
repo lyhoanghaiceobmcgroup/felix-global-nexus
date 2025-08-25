@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,11 +31,6 @@ const CheckIn = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Get location on component mount
-  useEffect(() => {
-    getLocation();
-  }, []);
-
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value || '' }));
   };
@@ -46,7 +41,7 @@ const CheckIn = () => {
                         formData.industry.trim() !== '' && 
                         formData.attendeeType !== '';
 
-  const getLocation = async () => {
+  const getLocation = useCallback(async () => {
     setIsLoadingLocation(true);
     try {
       const position = await getCurrentLocation();
@@ -58,13 +53,14 @@ const CheckIn = () => {
         description: "Đã lấy được vị trí hiện tại của bạn.",
         variant: "default"
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error('Geolocation error:', error);
       let errorMessage = "Không thể lấy vị trí. Vui lòng bật định vị và thử lại.";
       
-      if (error.message && error.message.includes('từ chối')) {
+      if (err.message && err.message.includes('từ chối')) {
         errorMessage = "Bạn đã từ chối quyền truy cập vị trí. Bạn vẫn có thể check-in mà không cần vị trí.";
-      } else if (error.code === 1) {
+      } else if ((error as GeolocationPositionError)?.code === 1) {
         errorMessage = "Quyền truy cập vị trí bị từ chối. Bạn vẫn có thể check-in mà không cần vị trí.";
       }
       
@@ -76,7 +72,12 @@ const CheckIn = () => {
     } finally {
       setIsLoadingLocation(false);
     }
-  };
+  }, [toast]);
+
+  // Get location on component mount
+  useEffect(() => {
+    getLocation();
+  }, [getLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

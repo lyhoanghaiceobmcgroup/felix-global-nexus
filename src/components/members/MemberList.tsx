@@ -29,7 +29,14 @@ interface MemberListProps {
   members: Member[];
   viewMode: string;
   language: string;
-  currentText: any;
+  currentText: {
+    members: {
+      noMembers: string;
+      noMembersDesc: string;
+      viewProfile: string;
+      connect: string;
+    };
+  };
 }
 
 export const MemberList = ({ members, viewMode, language, currentText }: MemberListProps) => {

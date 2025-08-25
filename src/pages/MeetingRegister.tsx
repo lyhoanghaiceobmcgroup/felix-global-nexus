@@ -9,6 +9,17 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, UserPlus, Building2, Phone, User, Mail, Briefcase, Target, CheckCircle, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+interface FormData {
+  name: string;
+  phone: string;
+  email: string;
+  company: string;
+  position: string;
+  industry: string;
+  experience: string;
+  goals: string;
+}
+
 // Mockup data chuyên nghiệp cho các ngành nghề
 const industryMockupData = {
   "Bất động sản": {
@@ -101,6 +112,55 @@ const MeetingRegister = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Validation functions
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^(\+84|0)[0-9]{9,10}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
+  const validateRequired = (value: string): boolean => {
+    return value.trim().length > 0;
+  };
+
+  const validateForm = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    if (!validateRequired(formData.name)) {
+      errors.push('Họ tên không được để trống');
+    }
+    
+    if (!validateRequired(formData.phone)) {
+      errors.push('Số điện thoại không được để trống');
+    } else if (!validatePhone(formData.phone)) {
+      errors.push('Số điện thoại không hợp lệ');
+    }
+    
+    if (!validateRequired(formData.email)) {
+      errors.push('Email không được để trống');
+    } else if (!validateEmail(formData.email)) {
+      errors.push('Email không hợp lệ');
+    }
+    
+    if (!validateRequired(formData.company)) {
+      errors.push('Tên công ty không được để trống');
+    }
+    
+    if (!validateRequired(formData.position)) {
+      errors.push('Chức vụ không được để trống');
+    }
+    
+    if (!validateRequired(formData.industry)) {
+      errors.push('Ngành nghề không được để trống');
+    }
+    
+    return { isValid: errors.length === 0, errors };
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value || '' }));
   };
@@ -135,7 +195,7 @@ const MeetingRegister = () => {
                         formData.position.trim() !== '' && 
                         formData.industry !== '';
 
-  const sendToTelegram = async (data: any) => {
+  const sendToTelegram = async (data: FormData) => {
     const botToken = '8477707186:AAH3WxBGVjYzk6CIP6dy3NFuD9lBWUbAiEY';
     const chatId = '-4833968275';
     
@@ -177,10 +237,11 @@ const MeetingRegister = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isFormComplete) {
+    const validation = validateForm();
+    if (!validation.isValid) {
       toast({
-        title: "Thông báo",
-        description: "Vui lòng điền đầy đủ thông tin",
+        title: "Lỗi validation",
+        description: validation.errors.join(', '),
         variant: "destructive"
       });
       return;

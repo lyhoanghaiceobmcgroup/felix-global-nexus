@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 interface MemberHeroProps {
-  currentText: any;
+  currentText: {
+    hero: {
+      title: string;
+      subtitle: string;
+    };
+  };
 }
 export const MemberHero = ({
   currentText

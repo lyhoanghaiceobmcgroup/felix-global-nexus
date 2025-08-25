@@ -15,7 +15,15 @@ interface MemberFiltersProps {
   setViewMode: (mode: string) => void;
   industries: string[];
   regions: string[];
-  currentText: any;
+  currentText: {
+    members: {
+      searchPlaceholder: string;
+      allIndustries: string;
+      allRegions: string;
+      listView: string;
+      gridView: string;
+    };
+  };
 }
 
 export const MemberFilters = ({

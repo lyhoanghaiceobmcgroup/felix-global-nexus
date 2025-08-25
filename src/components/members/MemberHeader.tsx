@@ -6,7 +6,12 @@ import { Menu, X } from "lucide-react";
 interface MemberHeaderProps {
   language: string;
   toggleLanguage: () => void;
-  currentText: any;
+  currentText: {
+    members: {
+      title: string;
+      subtitle: string;
+    };
+  };
 }
 
 export const MemberHeader = ({ language, toggleLanguage, currentText }: MemberHeaderProps) => {

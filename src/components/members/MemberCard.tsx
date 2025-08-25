@@ -32,7 +32,12 @@ interface Member {
 interface MemberCardProps {
   member: Member;
   language: string;
-  currentText: any;
+  currentText: {
+    members: {
+      viewProfile: string;
+      connect: string;
+    };
+  };
 }
 
 export const MemberCard = ({ member, language, currentText }: MemberCardProps) => {
