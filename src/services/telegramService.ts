@@ -27,37 +27,47 @@ const getGroupIdByAttendeeType = (attendeeType: string): string => {
 
 export const sendCheckInToTelegram = async (data: CheckInData): Promise<boolean> => {
   try {
-    const groupId = getGroupIdByAttendeeType(data.attendeeType);
+    console.log('Starting Telegram send process...');
+    console.log('Bot token exists:', !!TELEGRAM_BOT_TOKEN);
     
-    let message = `🎯 **THÔNG BÁO CHECK-IN THÀNH CÔNG**
-
-` +
-       `👤 **Họ tên:** ${data.fullName}
-` +
-       `📱 **Số điện thoại:** ${data.phoneNumber}
-` +
-       `🏢 **Ngành nghề:** ${data.industry}
-` +
-       `👥 **Loại tham dự:** ${data.attendeeType}
-`;
+    if (!TELEGRAM_BOT_TOKEN) {
+      console.error('Telegram bot token is missing');
+      return false;
+    }
+    
+    const groupId = getGroupIdByAttendeeType(data.attendeeType);
+    console.log('Selected group ID:', groupId);
+    
+    if (!groupId) {
+      console.error('Group ID is missing');
+      return false;
+    }
+    
+    let message = `🎯 THÔNG BÁO CHECK-IN THÀNH CÔNG\n\n` +
+       `👤 Họ tên: ${data.fullName}\n` +
+       `📱 Số điện thoại: ${data.phoneNumber}\n` +
+       `🏢 Ngành nghề: ${data.industry}\n` +
+       `👥 Loại tham dự: ${data.attendeeType}\n`;
      
      if (data.invitedBy && data.invitedBy.trim()) {
-       message += `🤝 **Khách của:** ${data.invitedBy}
-`;
+       message += `🤝 Khách của: ${data.invitedBy}\n`;
      }
     
     if (data.location) {
-      message += `📍 **Vị trí:** ${data.location.latitude}, ${data.location.longitude}\n`;
+      message += `📍 Vị trí: ${data.location.latitude}, ${data.location.longitude}\n`;
       if (data.location.address) {
-        message += `🗺️ **Địa chỉ:** ${data.location.address}\n`;
+        message += `🗺️ Địa chỉ: ${data.location.address}\n`;
       }
     } else {
-      message += `📍 **Vị trí:** Không có dữ liệu vị trí\n`;
+      message += `📍 Vị trí: Không có dữ liệu vị trí\n`;
     }
     
-    message += `⏰ **Thời gian:** ${data.timestamp}\n\n` +
+    message += `⏰ Thời gian: ${data.timestamp}\n\n` +
       `✅ Check-in thành công cho buổi họp BNI FELIX Chapter!`;
 
+    console.log('Sending message to Telegram...');
+    console.log('Message length:', message.length);
+    
     const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: {
@@ -66,15 +76,20 @@ export const sendCheckInToTelegram = async (data: CheckInData): Promise<boolean>
       body: JSON.stringify({
         chat_id: groupId,
         text: message,
-        parse_mode: 'Markdown'
+        parse_mode: 'HTML'
       })
     });
 
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`Telegram API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Telegram API error response:', errorText);
+      throw new Error(`Telegram API error: ${response.status} - ${errorText}`);
     }
 
     const result = await response.json();
+    console.log('Telegram API result:', result);
     return result.ok;
   } catch (error) {
     console.error('Error sending message to Telegram:', error);
