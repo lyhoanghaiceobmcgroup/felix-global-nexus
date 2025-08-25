@@ -28,7 +28,14 @@ const getGroupIdByAttendeeType = (attendeeType: string): string => {
 export const sendCheckInToTelegram = async (data: CheckInData): Promise<boolean> => {
   try {
     console.log('Starting Telegram send process...');
-    console.log('Bot token exists:', !!TELEGRAM_BOT_TOKEN);
+    console.log('Environment check:');
+    console.log('- VITE_TELEGRAM_BOT_TOKEN exists:', !!TELEGRAM_BOT_TOKEN);
+    console.log('- VITE_TELEGRAM_MEMBER_GROUP_ID exists:', !!MEMBER_GROUP_ID);
+    console.log('- VITE_TELEGRAM_GUEST_GROUP_ID exists:', !!GUEST_GROUP_ID);
+    console.log('- Bot token value:', TELEGRAM_BOT_TOKEN ? `${TELEGRAM_BOT_TOKEN.substring(0, 10)}...` : 'undefined');
+    console.log('- Member group ID:', MEMBER_GROUP_ID);
+    console.log('- Guest group ID:', GUEST_GROUP_ID);
+    console.log('- All import.meta.env:', import.meta.env);
     
     if (!TELEGRAM_BOT_TOKEN) {
       console.error('Telegram bot token is missing');
