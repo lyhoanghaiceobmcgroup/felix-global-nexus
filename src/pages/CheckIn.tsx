@@ -82,10 +82,21 @@ const CheckIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.fullName || !formData.phoneNumber || !formData.industry || !formData.attendeeType) {
+    if (!formData.fullName.trim() || !formData.phoneNumber.trim() || !formData.industry.trim() || !formData.attendeeType) {
       toast({
         title: "Thông báo",
         description: "Vui lòng điền đầy đủ thông tin",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate phone number format
+    const phoneRegex = /^[0-9+\-\s()]+$/;
+    if (!phoneRegex.test(formData.phoneNumber.trim())) {
+      toast({
+        title: "Số điện thoại không hợp lệ",
+        description: "Vui lòng nhập số điện thoại hợp lệ",
         variant: "destructive"
       });
       return;
@@ -113,6 +124,11 @@ const CheckIn = () => {
       const success = await sendCheckInToTelegram(checkInData);
       
       if (success) {
+        toast({
+          title: "Check-in thành công!",
+          description: "Thông tin của bạn đã được gửi thành công.",
+          variant: "default"
+        });
         setShowSuccess(true);
         // Reset form after 3 seconds
         setTimeout(() => {
@@ -120,7 +136,8 @@ const CheckIn = () => {
             fullName: "",
             phoneNumber: "",
             industry: "",
-            attendeeType: ""
+            attendeeType: "",
+            invitedBy: ""
           });
           setShowSuccess(false);
         }, 3000);
@@ -128,9 +145,10 @@ const CheckIn = () => {
         throw new Error('Failed to send to Telegram');
       }
     } catch (error) {
+      console.error('Check-in error:', error);
       toast({
         title: "Lỗi gửi thông tin",
-        description: "Không thể gửi thông tin check-in. Vui lòng thử lại.",
+        description: "Không thể gửi thông tin check-in. Vui lòng kiểm tra kết nối mạng và thử lại.",
         variant: "destructive"
       });
     } finally {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 const formSchema = z.object({
   name: z.string().min(2, "Họ tên phải có ít nhất 2 ký tự"),
   email: z.string().email("Email không hợp lệ"),
-  phone: z.string().min(10, "Số điện thoại phải có ít nhất 10 số"),
+  phone: z.string().min(10, "Số điện thoại phải có ít nhất 10 số").regex(/^[0-9+\-\s()]+$/, "Số điện thoại chỉ được chứa số và ký tự đặc biệt"),
   company: z.string().min(2, "Công ty/Ngành nghề phải có ít nhất 2 ký tự"),
 });
 
@@ -70,20 +69,32 @@ const Register = () => {
     }
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log('Registration data:', values);
-    
-    toast({
-      title: content[language].success,
-      description: content[language].successDesc,
-    });
-    
-    form.reset();
-    
-    // Navigate back after 2 seconds
-    setTimeout(() => {
-      navigate(-1);
-    }, 2000);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      console.log('Registration data:', values);
+      
+      // Here you can add API call to save registration data
+      // await saveRegistration(values);
+      
+      toast({
+        title: content[language].success,
+        description: content[language].successDesc,
+      });
+      
+      form.reset();
+      
+      // Navigate back after 2 seconds
+      setTimeout(() => {
+        navigate(-1);
+      }, 2000);
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Lỗi đăng ký",
+        description: "Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.",
+        variant: "destructive"
+      });
+    }
   };
 
   const t = content[language];
