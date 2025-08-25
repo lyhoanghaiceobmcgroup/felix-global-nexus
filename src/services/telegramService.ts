@@ -12,9 +12,9 @@ interface CheckInData {
   timestamp: string;
 }
 
-const TELEGRAM_BOT_TOKEN = '8477707186:AAH3WxBGVjYzk6CIP6dy3NFuD9lBWUbAiEY';
-const MEMBER_GROUP_ID = '-4985415228'; // Cho thành viên
-const GUEST_GROUP_ID = '-4833968275'; // Cho khách mời, khách thăm, khách đặc biệt
+const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+const MEMBER_GROUP_ID = import.meta.env.VITE_TELEGRAM_MEMBER_GROUP_ID; // Cho thành viên
+const GUEST_GROUP_ID = import.meta.env.VITE_TELEGRAM_GUEST_GROUP_ID; // Cho khách mời, khách thăm, khách đặc biệt
 
 // Hàm xác định group ID dựa trên loại người tham dự
 const getGroupIdByAttendeeType = (attendeeType: string): string => {
@@ -130,7 +130,8 @@ export const getCurrentLocation = (): Promise<GeolocationPosition> => {
 export const getAddressFromCoordinates = async (lat: number, lng: number): Promise<string> => {
   try {
     // Using a free geocoding service (you might want to use Google Maps API for better results)
-    const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=vi`);
+    const apiUrl = import.meta.env.VITE_GEOCODING_API_URL || 'https://api.bigdatacloud.net/data/reverse-geocode-client';
+    const response = await fetch(`${apiUrl}?latitude=${lat}&longitude=${lng}&localityLanguage=vi`);
     const data = await response.json();
     return data.display_name || `${lat}, ${lng}`;
   } catch (error) {

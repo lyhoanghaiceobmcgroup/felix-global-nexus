@@ -196,8 +196,8 @@ const MeetingRegister = () => {
                         formData.industry !== '';
 
   const sendToTelegram = async (data: FormData) => {
-    const botToken = '8477707186:AAH3WxBGVjYzk6CIP6dy3NFuD9lBWUbAiEY';
-    const chatId = '-4833968275';
+    const botToken = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+    const chatId = import.meta.env.VITE_TELEGRAM_GUEST_GROUP_ID;
     
     const message = `🎯 ĐĂNG KÝ HỌP MỚI\n\n` +
       `👤 Họ tên: ${data.name}\n` +
